@@ -21,7 +21,11 @@ public class Service {
         this.userRepo = userRepo;
     }
 
-    public boolean saveVote() {
+    public boolean vote() {
+        return false;
+    }
+
+    public boolean unvote() {
         return false;
     }
 

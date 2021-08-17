@@ -1,11 +1,16 @@
 package com.example.votingsystem.model;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "dishes")
 @NoArgsConstructor
+@Getter
+@Setter
 public class Dish extends BaseEntity {
 
     protected Double price;
@@ -15,21 +20,9 @@ public class Dish extends BaseEntity {
         this.price = price;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
+//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JsonBackReference
+//    private Menu menu;
 
     @Override
     public String toString() {
