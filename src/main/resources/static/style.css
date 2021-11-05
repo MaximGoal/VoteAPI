@@ -1,0 +1,17 @@
+
+
+.footer{
+    position: absolute;
+    /*position: relative;*/
+    bottom: 0;
+    margin-top: -25px;
+    height: 25px;
+    width: 100%;
+    background-color: darkslategrey;
+    text-align: center;
+    color: white;
+}
+
+.backgroundColor{
+    background-color: lightgray;
+}

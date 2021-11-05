@@ -15,14 +15,14 @@ public abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
     protected Integer id;
 
-    protected String name;
+    public String name;
 
     public BaseEntity(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public long getId() {
+    public int getId() {
         Assert.notNull(id, "ID must not be null");
         return id;
     }

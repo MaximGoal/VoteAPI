@@ -1,0 +1,75 @@
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Users</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+<!--    <link rel="stylesheet" th:href="@{../static/style.css}">-->
+</head>
+<body>
+    <div>
+        <header>
+            <nav class="navbar">
+                <div>
+                    <a href="http://localhost:8080" class="navbar-brand">
+                        <span class="badge badge-warning">Vote Api</span></a>
+                </div>
+            </nav>
+        </header>
+    </div>
+
+    <div class="container">
+        <h2 class="text-center">
+            <em>Menu List of <span th:text="${user.getName()}"></span></em>
+        </h2>
+
+        <div class="alert alert-warning" role="alert" style="{{width: 400px}}">
+            <p>At date : <span class="badge badge-info"  th:text="${date}"></span></p>
+        </div>
+
+        <table border="1" class="table table-striped table-responsive-md">
+            <thead class="thead-dark">
+            <tr>
+                <th>Restaurant</th>
+                <th>Menu</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="restaurant: ${restaurants}">
+                <td th:text="${restaurant.name}"></td>
+                <td>
+                    <div th:each="dish: ${restaurantMenuMap.get(restaurant).getDishes()}">
+                        <span th:text="${dish.name}"></span>
+                        - price <span th:text="${dish.price}"></span>$
+                        <div>
+                        Total price :
+                        <span th:text="${restaurantMenuMap.get(restaurant).menuPrice()}"></span>$
+                        </div>
+                    </div>
+                </td>
+                <td><a th:href="@{/vote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id})}">
+                        <button class="btn btn-outline-success">
+<!--                                 th:href="@{/vote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id})}">-->
+                            Vote
+                        </button>
+                    </a>
+                    <a th:href="@{/unvote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id})}">
+                        <button class="btn btn-outline-danger">
+                            Unvote
+                        </button>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <footer class="page-footer font-small blue pt-4 footer">
+        <p class="text-muted text-center">All rights reserved 2021 @BoreyProjects</p>
+    </footer>
+</body>
+</html>

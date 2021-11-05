@@ -1,22 +1,20 @@
 package com.example.votingsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
+import static com.example.votingsystem.util.DateTimeUtil.patternDateTime;
 
 @Entity
-//@Table(name = "votes")
+@Table(name = "votes")
 @NoArgsConstructor
-@AllArgsConstructor
-@Getter
 @Setter
+@Getter
 public class Vote {
 
     @Id
@@ -24,24 +22,32 @@ public class Vote {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
     protected Integer id;
 
-//    @Column("user_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonBackReference
+//    org.hibernate.AnnotationException: @Column(s) not allowed on a @ManyToOne property: com.example.votingsystem.model.Vote.user
+//    @Column(name = "user_id")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+//    @JsonBackReference
     protected User user;
 
-////    @Column("restaurant_id")
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    protected Restaurant restaurant;
-
-//    @Column("menu_id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "menu_id")
     @JsonBackReference
     private Menu menu;
 
-//    @Column("date_time")
-    @DateTimeFormat
+    @Column(name = "date_time")
+    @DateTimeFormat(pattern = patternDateTime)
     protected LocalDateTime dateTime;
 
+    public Vote(User user, Menu menu, LocalDateTime dateTime) {
+        this.user = user;
+        this.menu = menu;
+        this.dateTime = dateTime;
+    }
 
-
+    public Vote(Integer id, User user, Menu menu, LocalDateTime dateTime) {
+        this.id = id;
+        this.user = user;
+        this.menu = menu;
+        this.dateTime = dateTime.truncatedTo(ChronoUnit.SECONDS);
+    }
 }

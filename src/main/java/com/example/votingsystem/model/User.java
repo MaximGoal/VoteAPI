@@ -1,6 +1,6 @@
 package com.example.votingsystem.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.example.votingsystem.service.Voter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,22 +9,20 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static com.example.votingsystem.util.DateTimeUtil.patternDateTime;
 
 @Entity
-//@Table(name = "users")
+@Table(name = "users")
 @NoArgsConstructor
-@Getter
 @Setter
+@Getter
 public class User extends BaseEntity {
 
     @Email
@@ -36,22 +34,27 @@ public class User extends BaseEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    // enable @CollectionTable
-//    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
-//            uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role"}, name = "uk_user_role")})
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role"}, name = "uk_user_role")})
+    @Column(name = "role") // from table "user_roles"
     @ElementCollection(fetch = FetchType.EAGER)
-//    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
 
-    @DateTimeFormat
-    private Date registered = new Date();
-
+    @DateTimeFormat(pattern = patternDateTime)
+    private LocalDate registered = LocalDate.now();
 
     private boolean enabled = true;
 
-    @OneToMany
-    @JsonManagedReference
-    private List<Vote> votes;
+    public String getName() {return this.name;}
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,
+                mappedBy = "user")
+    private List<Vote> votes = new ArrayList<>();
+
+    @Transient
+    private Voter voter = new Voter();
 
     public User(int id, String name, String email, String password, Role role, Role ... roles) {
         super(id, name);
@@ -61,52 +64,44 @@ public class User extends BaseEntity {
         new Date();
     }
 
-    public User(Integer id, String name, String email, String password, Set<Role> roles, Date registered, boolean enabled, List<Vote> votes) {
+    public User(Integer id, String name, String email, String password, Set<Role> roles, LocalDate registered, boolean enabled) {
         super(id, name);
         this.email = email;
         this.password = password;
         this.roles = roles;
         this.registered = registered;
         this.enabled = enabled;
-        setVotes(votes);
     }
 
     public User (User u) {
-        this(u.id, u.name, u.email, u.password, u.roles, u.registered, u.enabled, u.votes);
+        this(u.id, u.name, u.email, u.password, u.roles, u.registered, u.enabled);
     }
 
-    @Transactional
-    // transfer vote function from User to Service
-    public boolean vote (Restaurant restaurant) {
-        LocalDateTime dateTime = LocalDateTime.now();
+//    public void vote(Restaurant restaurant) {
+//        voter.vote(this, restaurant);
+//    }
 
-        // determine 11:00 vote deadline
-        if (dateTime.isAfter(LocalDateTime.of(
-                dateTime.getYear(),
-                dateTime.getMonth(),
-                dateTime.getDayOfMonth(),
-                11, 0, 0))) {
-            return false;
-        }
-
-        Vote vote = new Vote(null,
-                this,
-                restaurant.getMenu().get(dateTime.toLocalDate()),
-                dateTime
-        );
-        return true;
-    }
+//    public void unvote(Restaurant restaurant) {
+//        voter.unVote(restaurant, LocalDateTime.now(), this);
+//    }
 
     public boolean isVoted (LocalDate date) {
-        return votes.stream()
+        return voter.getVotes().stream()
                 .map(Vote::getDateTime)
                 .map(LocalDateTime::toLocalDate)
                 .anyMatch(date1 -> date1.isEqual(date));
     }
 
-    @Transactional
-    // transfer unvote function from User to Service
-    public void unVote() {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return enabled == user.enabled && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(roles, user.roles) && Objects.equals(registered, user.registered);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, password, roles, registered, enabled);
+    }
 }

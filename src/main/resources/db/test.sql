@@ -1,0 +1,1 @@
+DELETE FROM votes where id = 120001;

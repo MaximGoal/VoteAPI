@@ -5,6 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "dishes")
@@ -20,14 +23,19 @@ public class Dish extends BaseEntity {
         this.price = price;
     }
 
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JsonBackReference
-//    private Menu menu;
+    //    @JsonBackReference
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "dishes")
+    private Set<Menu> menus = new HashSet<>();
+
+    @Transactional
+    public void addMenusToDish(Set<Menu> menus) {
+        this.menus.addAll(menus);
+    }
 
     @Override
     public String toString() {
         return "Dish{" +
-                "id=" + id +
+//                "id=" + id +
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 '}';
