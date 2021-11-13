@@ -36,8 +36,8 @@ public class VotingSystemApplication implements CommandLineRunner {
         context =
                 SpringApplication.run(VotingSystemApplication.class, args);
 
-        JpaMenuRepo menuRepo = context.getBean(JpaMenuRepo.class);
-        Menu menu1 = menuRepo.getById(100020);
+//        JpaMenuRepo menuRepo = context.getBean(JpaMenuRepo.class);
+//        Menu menu1 = menuRepo.getById(100020);
 
     }
 

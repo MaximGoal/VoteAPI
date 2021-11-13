@@ -9,6 +9,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public abstract class BaseEntity {
     public static final int START_SEQ = 100000;
+    public static final int START_VOTE_SEQ = 1000000;
 
     @Id
     @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1, initialValue = START_SEQ)

@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS users;
 DROP SEQUENCE IF EXISTS global_seq;
 
 CREATE SEQUENCE global_seq START WITH 100000;
+CREATE SEQUENCE vote_seq START WITH 1000000;
 
 CREATE TABLE users
 (
@@ -51,8 +52,6 @@ CREATE TABLE dishes
     id               INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
     name             VARCHAR      NOT NULL,
     price            FLOAT        NOT NULL
---     menu_id          TEXT      NOT NULL,
---     FOREIGN KEY (menu_id) REFERENCES menus (id) ON DELETE CASCADE
 );
 
 CREATE TABLE votes
@@ -60,11 +59,12 @@ CREATE TABLE votes
     id               INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
     user_id          INTEGER      NOT NULL,
     menu_id          INTEGER      NOT NULL,
-    date_time        TIMESTAMP(0) DEFAULT now() NOT NULL,
+    date             DATE DEFAULT now() NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (menu_id) REFERENCES menus (id) ON DELETE CASCADE
 );
-CREATE UNIQUE INDEX users_unique_time_idx ON votes (user_id,date_time);
+CREATE UNIQUE INDEX users_unique_date_idx ON votes (user_id,date);
+CREATE UNIQUE INDEX users_unique_menu_date_idx ON votes (user_id,menu_id,date);
 
 CREATE TABLE menus_dishes
 (

@@ -3,7 +3,8 @@ package com.example.votingsystem.controller;
 import com.example.votingsystem.model.Menu;
 import com.example.votingsystem.model.Restaurant;
 import com.example.votingsystem.model.Vote;
-import com.example.votingsystem.service.Voter;
+import com.example.votingsystem.service.VoteApiService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,27 +21,26 @@ import java.util.Map;
 @Controller
 public class VoteController {
 
-    private Voter voter;
+    private VoteApiService voteApiService;
 
-    public VoteController(Voter voter) {
-        this.voter = voter;
+    public VoteController(VoteApiService voteApiService) {
+        this.voteApiService = voteApiService;
     }
 
     @GetMapping("/{userId}")
     public String basePage(@PathVariable("userId") Integer id,
-            Model model) {
+                           Model model) {
         LocalDate date = LocalDate.now();
-        List<Restaurant> restaurantList = voter.getRestaurants();
+        List<Restaurant> restaurantList = voteApiService.getRestaurants();
         Map<Restaurant, Menu> map = new HashMap<>();
         for (int i = 0; i < restaurantList.size(); i++) {
             Restaurant restaurant = restaurantList.get(i);
-            Menu menuByDateAndRestaurant = voter.getMenuByDateAndRestaurant(date, restaurant);
+            Menu menuByDateAndRestaurant = voteApiService.getMenuByDateAndRestaurant(date, restaurant);
             map.put(restaurant, menuByDateAndRestaurant);
         }
         model.addAttribute("restaurantMenuMap", map);
         model.addAttribute("restaurants", map.keySet());
-
-        model.addAttribute("user", voter.getUserById(id));
+        model.addAttribute("user", voteApiService.getUserById(id));
         model.addAttribute("date", date);
 
         return "menuList";
@@ -49,23 +50,43 @@ public class VoteController {
     @GetMapping("/users")
     public ModelAndView users() {
         ModelAndView modelAndView = new ModelAndView("users.html");
-        modelAndView.addObject("usersList", voter.getAllUsers());
+        modelAndView.addObject("usersList", voteApiService.getAllUsers());
+
         return modelAndView;
     }
 
-    @GetMapping ("/vote/{menuId}")
+    @GetMapping("/vote/{menuId}")
     public String vote(@PathVariable("menuId") Integer menuId,
                        @RequestParam("userId") Integer userId) {
-        voter.vote(userId, menuId);
+        voteApiService.vote(userId, menuId);
 
-        return "redirect:/"+userId;
+        return "redirect:/" + userId;
     }
 
-    @GetMapping ("/unvote/{menuId}")
+    @GetMapping("/unvote/{menuId}")
     public String unVote(@PathVariable("menuId") Integer menuId,
-                       @RequestParam("userId") Integer userId) {
-        voter.unVote(userId, menuId);
+                         @RequestParam("userId") Integer userId,
 
-        return "redirect:/"+userId;
+                         @RequestParam("date")
+                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        voteApiService.unVote(userId, menuId, date);
+
+        return "redirect:/" + userId;
+    }
+
+    @GetMapping("/delete/vote/{id}")
+    public String unVote(@PathVariable("id") Integer id) {
+        voteApiService.deleteVote(id);
+
+        return "redirect:/allVotes";
+    }
+
+    @GetMapping("/allVotes")
+    public String allVotes(Model model) {
+        List<Vote> voteList = voteApiService.getVotes();
+        voteList.sort(Comparator.comparing(Vote::getDate));
+        model.addAttribute("votes", voteList);
+        model.addAttribute("date", LocalDate.now());
+        return "/votesList";
     }
 }

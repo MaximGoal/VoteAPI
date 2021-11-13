@@ -53,7 +53,7 @@ public class VoteDAO {
     public Vote getVoteById(Integer id) {return voteRepo.findVotesById(id);}
 
     public Vote getVoteByUserAndDate(User user, LocalDate date) {
-        return new Vote();
+        return voteRepo.findVotesByUserAndDate(user, date);
     }
 
     public Menu getMenuByDateAndRestaurant(LocalDate date, Restaurant restaurant) {
@@ -75,7 +75,7 @@ public class VoteDAO {
             voteRepo.updateVote(
                         vote.getUser().getId(),
                         vote.getMenu().getId(),
-                        vote.getDateTime(),
+                        vote.getDate(),
                         vote.getId());
         } else voteRepo.save(vote);
     }

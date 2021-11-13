@@ -24,6 +24,7 @@ public class DateTimeUtil {
 //        return dateTimeNow;
 //    }
     public static final String patternDateTime = "yyyy-MM-dd HH:mm:ss";
+    public static final String patternDate = "yyyy-MM-dd";
 
     public static DateTimeFormatter formatterYMDHM = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     public static DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +22,8 @@ public interface JpaVoteRepo extends JpaRepository<Vote, Integer> {
 
     Vote findVotesByMenuAndUser(Menu menu, User user);
 
+    Vote findVotesByUserAndDate(User user, LocalDate date);
+
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM Vote v where v.id = ?1")
     @Transactional
@@ -28,11 +31,10 @@ public interface JpaVoteRepo extends JpaRepository<Vote, Integer> {
 
     @Modifying
     @Transactional
-    void deleteVoteByDateTimeAndAndMenu(LocalDateTime dateTime, Menu menu);
+    void deleteVoteByDateAndAndMenu(LocalDate date, Menu menu);
 
     @Modifying
-    @Query("update Vote v set v.user.id =?1, v.menu.id =?2, v.dateTime =?3 where v.id = ?4")
+    @Query("update Vote v set v.user.id =?1, v.menu.id =?2, v.date =?3 where v.id = ?4")
     @Transactional
-    void updateVote(Integer userId, Integer menuId, LocalDateTime dateTime, Integer voteId);
-
+    void updateVote(Integer userId, Integer menuId, LocalDate date, Integer voteId);
 }

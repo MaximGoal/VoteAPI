@@ -1,5 +1,6 @@
 package com.example.votingsystem.service;
 
+import com.example.votingsystem.exception.VoteException;
 import com.example.votingsystem.exception.TimeException;
 import com.example.votingsystem.model.Menu;
 import com.example.votingsystem.model.Restaurant;
@@ -8,6 +9,7 @@ import com.example.votingsystem.model.Vote;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -19,14 +21,14 @@ import java.util.Objects;
 @Component
 @Getter
 @NoArgsConstructor
-public class Voter {
+public class VoteApiService {
 
     private VoteDAO voteDAO;
 
     private static List<Vote> votes;
 
     @Autowired
-    public Voter(VoteDAO voteDAO) {
+    public VoteApiService(VoteDAO voteDAO) {
         this.voteDAO = voteDAO;
     }
 
@@ -46,17 +48,28 @@ public class Voter {
         return voteDAO.getMenuByDateAndRestaurant(date, restaurant);
     }
 
+    // Exception handling doesn't work. Fix it!
     @Transactional
     public boolean vote (Integer userId, Integer menuId) {
-        Vote vote = getVoteByUserIdAndMenuId(userId, menuId);
-        voteDAO.saveVote(vote);
+        try {
+            Vote vote = getVoteByUserIdAndMenuId(userId, menuId);
+            voteDAO.saveVote(vote);
+        } catch (DataIntegrityViolationException ex) {
+            throw new VoteException("User with id:" + userId + " is already voted.");
+        }
         return true;
     }
 
+    public void deleteVote(Integer id) {
+        voteDAO.deleteVoteById(id);
+    }
+
     @Transactional
-    public boolean unVote(Integer userId, Integer menuId) {
-//        Vote vote = voteDAO.deleteVoteById();
-//        voteDAO.deleteVoteById(vote.getId());
+    public boolean unVote(Integer userId, Integer menuId, LocalDate date) {
+        Vote vote = voteDAO.getVoteByUserAndDate(voteDAO.getUserById(userId), date);
+        if (vote == null) throw new VoteException("Vote of user:" + userId + " and date :" + date + " is not present in database.");
+
+        voteDAO.deleteVoteById(vote.getId());
         return true;
     }
 
@@ -74,7 +87,7 @@ public class Voter {
                 restaurant.getMenus().stream()
                         .filter(a -> a.getDate().isEqual(dateTime.toLocalDate()))
                         .findAny().get(),
-                dateTime
+                dateTime.toLocalDate()
         );
     }
 
@@ -95,8 +108,8 @@ public class Voter {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Voter voter = (Voter) o;
-        return Objects.equals(voteDAO, voter.voteDAO);
+        VoteApiService voteApiService = (VoteApiService) o;
+        return Objects.equals(voteDAO, voteApiService.voteDAO);
     }
 
     @Override

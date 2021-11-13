@@ -13,19 +13,22 @@
         <header>
             <nav class="navbar">
                 <div>
-                    <a href="http://localhost:8080" class="navbar-brand">
+                    <a href="http://localhost:8080" class="navbar-brand" style="margin-left: 250px">
                         <span class="badge badge-warning">Vote Api</span></a>
+                    <a href="http://localhost:8080/allVotes" class="navbar-brand">
+                        <span class="badge badge-warning">Votes list</span></a>
                 </div>
             </nav>
         </header>
     </div>
 
     <div class="container">
-        <h2 class="text-center">
-            <em>Menu List of <span th:text="${user.getName()}"></span></em>
-        </h2>
-
-        <div class="alert alert-warning" role="alert" style="{{width: 400px}}">
+        <div class="alert alert-dark" role="alert" style="height: 70px">
+            <h2 class="text-center">
+                <em>Menu List of <span th:text="${user.getName()}"></span></em>
+            </h2>
+        </div>
+        <div class="alert alert-warning" role="alert" style="height: 50px">
             <p>At date : <span class="badge badge-info"  th:text="${date}"></span></p>
         </div>
 
@@ -45,10 +48,11 @@
                     <div th:each="dish: ${restaurantMenuMap.get(restaurant).getDishes()}">
                         <span th:text="${dish.name}"></span>
                         - price <span th:text="${dish.price}"></span>$
-                        <div>
-                        Total price :
-                        <span th:text="${restaurantMenuMap.get(restaurant).menuPrice()}"></span>$
-                        </div>
+                    </div>
+                    <div>
+                        <strong> Total price :
+                          <span th:text="${restaurantMenuMap.get(restaurant).menuPrice()}"></span>$
+                        </strong>
                     </div>
                 </td>
                 <td><a th:href="@{/vote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id})}">
@@ -57,7 +61,7 @@
                             Vote
                         </button>
                     </a>
-                    <a th:href="@{/unvote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id})}">
+                    <a th:href="@{/unvote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id}, date=${date})}">
                         <button class="btn btn-outline-danger">
                             Unvote
                         </button>

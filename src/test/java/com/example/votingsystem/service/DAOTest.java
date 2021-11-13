@@ -7,6 +7,7 @@ import com.example.votingsystem.model.Vote;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -16,15 +17,16 @@ import java.util.List;
 
 import static com.example.votingsystem.testData.VoteTestData.*;
 
-//@SpringBootTest
+@SpringBootTest
 @SpringJUnitConfig(locations = {
         "classpath:spring/spring-app.xml",
         "classpath:spring/spring-db.xml"
 //        "classpath:spring/spring-cache.xml"
 })
-//@ExtendWith(SpringExtension.class) // @SpringJUnitConfig already has inside @ExtendWith(SpringExtension.class) annotation
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-public class ServiceTest {
+// also go to string 19 of "spring-db.xml" to disable "init.sql" ??
+//@ExtendWith(SpringExtension.class) // @SpringJUnitConfig already has inside @ExtendWith(SpringExtension.class) annotation
+public class DAOTest {
 
     @SuppressWarnings("SpringJavaAutowiredMembersInspection")
     @Autowired
@@ -48,9 +50,9 @@ public class ServiceTest {
 
     @Test
     public void getVoteById() {
-        Vote actual = service.getVoteById(120005);
+        Vote actual = service.getVoteById(1000005);
         Assertions.assertThat(actual).isNotNull();
-        actual.setDateTime(vote06.getDateTime());
+        actual.setDate(vote06.getDate());
         Assertions.assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("user.votes")
@@ -66,12 +68,12 @@ public class ServiceTest {
 
     @Test
     public void updateVoteById() {
-        Vote actual = service.getVoteById(120001);
+        Vote actual = service.getVoteById(1000002);
         actual.setMenu(vote03.getMenu());
-        service.saveVoteById(120001, actual);
-        vote02Upd.setDateTime(actual.getDateTime());
+        service.saveVoteById(1000002, actual);
+        vote02Upd.setDate(actual.getDate());
 
-        Assertions.assertThat(service.getVoteById(120001))
+        Assertions.assertThat(service.getVoteById(1000002))
                 .usingRecursiveComparison()
                 .ignoringFields("menu.dateTime", "user.votes")
                 .isEqualTo(vote02Upd);

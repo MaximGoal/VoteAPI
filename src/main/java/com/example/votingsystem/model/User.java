@@ -1,6 +1,6 @@
 package com.example.votingsystem.model;
 
-import com.example.votingsystem.service.Voter;
+import com.example.votingsystem.service.VoteApiService;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,10 +13,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.example.votingsystem.util.DateTimeUtil.patternDateTime;
+import static com.example.votingsystem.util.DateTimeUtil.patternDate;
 
 @Entity
 @Table(name = "users")
@@ -42,7 +41,7 @@ public class User extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<Role> roles;
 
-    @DateTimeFormat(pattern = patternDateTime)
+    @DateTimeFormat(pattern = patternDate)
     private LocalDate registered = LocalDate.now();
 
     private boolean enabled = true;
@@ -54,7 +53,7 @@ public class User extends BaseEntity {
     private List<Vote> votes = new ArrayList<>();
 
     @Transient
-    private Voter voter = new Voter();
+    private VoteApiService voteApiService = new VoteApiService();
 
     public User(int id, String name, String email, String password, Role role, Role ... roles) {
         super(id, name);
@@ -86,9 +85,9 @@ public class User extends BaseEntity {
 //    }
 
     public boolean isVoted (LocalDate date) {
-        return voter.getVotes().stream()
-                .map(Vote::getDateTime)
-                .map(LocalDateTime::toLocalDate)
+        return voteApiService.getVotes().stream()
+                .map(Vote::getDate)
+//                .map(LocalDateTime::toLocalDate)
                 .anyMatch(date1 -> date1.isEqual(date));
     }
 

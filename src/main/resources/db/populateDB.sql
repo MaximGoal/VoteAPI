@@ -1,3 +1,5 @@
+-- noinspection SqlWithoutWhereForFile
+
 DELETE FROM menus_dishes;
 DELETE FROM votes;
 DELETE FROM dishes;
@@ -5,15 +7,14 @@ DELETE FROM menus;
 DELETE FROM restaurants;
 DELETE FROM user_roles;
 DELETE FROM users;
-ALTER SEQUENCE global_seq RESTART WITH 100000;
+-- ALTER SEQUENCE global_seq RESTART WITH 100000;
 
 INSERT INTO users VALUES
---                          (100001, 'Admin', 'admin@mail.com', 'password', now(), true),
---                          (100002, 'User01', 'user01@mail.com', 'password', now(), true),
---                          (100003, 'User02', 'user02@mail.com', 'password', now(), true);
                          (100001, 'Admin', 'admin@mail.com', 'password', 'ADMIN'),
-                         (100002, 'User01', 'user01@mail.com', 'password', 'USER'),
-                         (100003, 'User02', 'user02@mail.com', 'password', 'USER');
+                         (100002, 'Lakomka', 'user01@mail.com', 'password', 'USER'),
+                         (100003, 'Biruk', 'user02@mail.com', 'password', 'USER'),
+                         (100004, 'Borey', 'user03@mail.com', 'password', 'USER'),
+                         (100005, 'Dobrinja', 'user04@mail.com', 'password', 'USER');
 INSERT INTO user_roles VALUES
                          (100001, 'ADMIN'),
                          (100002, 'USER'),
@@ -30,28 +31,28 @@ INSERT INTO menus VALUES
                          (100021, 'Breakfast #2', 100011, now()::timestamp(0)),
                          (100022, 'Breakfast #3', 100012, now()::timestamp(0)),
                          (100023, 'Breakfast #4', 100013, now()::timestamp(0)),
-                         (100024, 'Dinner #1', 100010, now()::timestamp(0) + interval '1 days'),
-                         (100025, 'Dinner #2', 100011, now()::timestamp(0) + interval '1 days'),
-                         (100026, 'Dinner #3', 100012, now()::timestamp(0) + interval '1 days'),
-                         (100027, 'Dinner #4', 100013, now()::timestamp(0) + interval '1 days'),
-                         (100028, '5 oClock #1', 100010, now()::timestamp(0) + interval '2 days'),
-                         (100029, '5 oClock #2', 100011, now()::timestamp(0) + interval '2 days'),
-                         (100030, '5 oClock #3', 100012, now()::timestamp(0) + interval '2 days'),
-                         (100031, '5 oClock #4', 100013, now()::timestamp(0) + interval '2 days'),
-                         (100032, 'Supper #1', 100010, now()::timestamp(0) + interval '3 days'),
-                         (100033, 'Supper #2', 100011, now()::timestamp(0) + interval '3 days'),
-                         (100034, 'Supper #3', 100012, now()::timestamp(0) + interval '3 days'),
-                         (100035, 'Supper #4', 100013, now()::timestamp(0) + interval '3 days');
+                         (100024, 'Dinner #1', 100010, now()::timestamp(0) + interval '1 day'),
+                         (100025, 'Dinner #2', 100011, now()::timestamp(0) + interval '1 day'),
+                         (100026, 'Dinner #3', 100012, now()::timestamp(0) + interval '1 day'),
+                         (100027, 'Dinner #4', 100013, now()::timestamp(0) + interval '1 day'),
+                         (100028, '5 oClock #1', 100010, now()::timestamp(0) + interval '2 day'),
+                         (100029, '5 oClock #2', 100011, now()::timestamp(0) + interval '2 day'),
+                         (100030, '5 oClock #3', 100012, now()::timestamp(0) + interval '2 day'),
+                         (100031, '5 oClock #4', 100013, now()::timestamp(0) + interval '2 day'),
+                         (100032, 'Supper #1', 100010, now()::timestamp(0) + interval '3 day'),
+                         (100033, 'Supper #2', 100011, now()::timestamp(0) + interval '3 day'),
+                         (100034, 'Supper #3', 100012, now()::timestamp(0) + interval '3 day'),
+                         (100035, 'Supper #4', 100013, now()::timestamp(0) + interval '3 day');
 
 INSERT INTO dishes VALUES
                         (110000, 'Tea', 11.0),
                         (110001, 'Juice', 15.0),
                         (110002, 'Water', 5.0),
                         (110003, 'Bread', 2.5),
-                        (110004, 'Gamburger', 20.0),
+                        (110004, 'Hamburger', 20.0),
                         (110005, 'Rice', 10.0),
-                        (110006, 'Spagetti', 12.0),
-                        (110007, 'Rizotto', 35.5),
+                        (110006, 'Spaghetti', 12.0),
+                        (110007, 'Risotto', 35.5),
                         (110008, 'Jam', 1.0),
                         (110009, 'Meal', 30.0),
                         (110010, 'Chicken meal', 22.0),
@@ -59,24 +60,24 @@ INSERT INTO dishes VALUES
                         (110012, 'Schi', 16.0),
                         (110013, 'Solyanka', 16.0),
                         (110014, 'Harcho', 15.0),
-                        (110015, 'Beafshteks', 33.0),
+                        (110015, 'Beefsteaks', 33.0),
                         (110016, 'Hot dog', 23.0),
                         (110017, 'Pie', 17.0),
-                        (110018, 'Tiramissu', 22.0);
+                        (110018, 'Tiramisu', 22.0);
 
 INSERT INTO votes VALUES
-                        (120000, 100001, 100020, now()),
-                        (120001, 100002, 100020, now() + interval '1 seconds'),
-                        (120002, 100003, 100021, now() + interval '2 seconds'),
-                        (120003, 100001, 100025, now() + interval '3 seconds'),
-                        (120004, 100002, 100024, now() + interval '4 seconds'),
-                        (120005, 100003, 100025, now() + interval '15 seconds'),
-                        (120006, 100001, 100031, now() + interval '16 seconds'),
-                        (120007, 100002, 100030, now() + interval '17 seconds'),
-                        (120008, 100003, 100030, now() + interval '18 seconds'),
-                        (120009, 100001, 100035, now() + interval '170 seconds'),
-                        (120010, 100002, 100035, now() + interval '171 seconds'),
-                        (120011, 100003, 100035, now() + interval '172 seconds');
+                        (1000001, 100001, 100020, now()),
+                        (1000002, 100002, 100020, now() + interval '1 day'),
+                        (1000003, 100003, 100021, now() + interval '2 day'),
+                        (1000004, 100001, 100025, now() + interval '3 day'),
+                        (1000005, 100002, 100024, now() + interval '4 day'),
+                        (1000006, 100003, 100025, now() + interval '15 day'),
+                        (1000007, 100001, 100031, now() + interval '16 day'),
+                        (1000008, 100002, 100030, now() + interval '17 day'),
+                        (1000009, 100003, 100030, now() + interval '18 day'),
+                        (1000010, 100001, 100035, now() + interval '19 day'),
+                        (1000011, 100002, 100035, now() + interval '20 day'),
+                        (1000012, 100003, 100035, now() + interval '21 day');
 
 INSERT INTO menus_dishes VALUES
                         (100020, 110000),
