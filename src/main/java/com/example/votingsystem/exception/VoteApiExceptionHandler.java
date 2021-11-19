@@ -10,14 +10,17 @@ import java.time.ZonedDateTime;
 @ControllerAdvice
 public class VoteApiExceptionHandler {
 
-    @ExceptionHandler(value = {VoteException.class, TimeException.class})
-    public ResponseEntity<Object> handleAlreadyVotedException (RuntimeException e) {
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        ApiException apiException = new ApiException(   e.getMessage(),
-                                                        e,
-                                                        badRequest,
-                                                        ZonedDateTime.now());
-        return new ResponseEntity<>(apiException, badRequest);
+    @ExceptionHandler(value = {VoteException.class})
+    public String handleAlreadyVotedException (RuntimeException e) {
+            return "redirect:/"+((VoteException) e).userId;
     }
 
+    @ExceptionHandler(value = {TimeException.class})
+    public ResponseEntity<Object> handleTimeException (RuntimeException e) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ApiException apiException = new ApiException(   e.getMessage(),
+                badRequest,
+                ZonedDateTime.now());
+        return new ResponseEntity<>(apiException, badRequest);
+    }
 }

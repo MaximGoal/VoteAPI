@@ -1,5 +1,6 @@
 package com.example.votingsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class Restaurant extends BaseEntity {
         super(id, name);
     }
 
+    @JsonManagedReference
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,
                 mappedBy = "restaurant")
     private List <Menu> menus = new ArrayList<>();

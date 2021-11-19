@@ -2,14 +2,12 @@ package com.example.votingsystem.service;
 
 import com.example.votingsystem.exception.VoteException;
 import com.example.votingsystem.exception.TimeException;
-import com.example.votingsystem.model.Menu;
-import com.example.votingsystem.model.Restaurant;
-import com.example.votingsystem.model.User;
-import com.example.votingsystem.model.Vote;
+import com.example.votingsystem.model.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
@@ -44,6 +42,10 @@ public class VoteApiService {
 
     public List<Restaurant> getRestaurants() { return voteDAO.getAllRestaurants(); }
 
+    public Page<Restaurant> getRestaurantsPageable(RestaurantPage page) {
+        return voteDAO.getAllRestaurantsPageable(page);
+    }
+
     public Menu getMenuByDateAndRestaurant(LocalDate date, Restaurant restaurant) {
         return voteDAO.getMenuByDateAndRestaurant(date, restaurant);
     }
@@ -51,12 +53,8 @@ public class VoteApiService {
     // Exception handling doesn't work. Fix it!
     @Transactional
     public boolean vote (Integer userId, Integer menuId) {
-        try {
             Vote vote = getVoteByUserIdAndMenuId(userId, menuId);
             voteDAO.saveVote(vote);
-        } catch (DataIntegrityViolationException ex) {
-            throw new VoteException("User with id:" + userId + " is already voted.");
-        }
         return true;
     }
 

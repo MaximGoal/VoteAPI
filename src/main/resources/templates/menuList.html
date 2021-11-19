@@ -1,7 +1,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Users</title>
+    <title>Vote API</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -56,13 +56,14 @@
                     </div>
                 </td>
                 <td><a th:href="@{/vote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id})}">
-                        <button class="btn btn-outline-success">
-<!--                                 th:href="@{/vote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id})}">-->
+                        <button class="btn btn-outline-success" type="button"
+                                data-container="body" data-toggle="popover" data-placement="bottom" title="Vote" data-content="You're voted">
                             Vote
                         </button>
                     </a>
                     <a th:href="@{/unvote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id}, date=${date})}">
-                        <button class="btn btn-outline-danger">
+                        <button class="btn btn-outline-danger"
+                                data-toggle="popover" title="Unvote" data-content="You're unvoted">
                             Unvote
                         </button>
                     </a>

@@ -3,8 +3,10 @@ package com.example.votingsystem.service;
 import com.example.votingsystem.model.*;
 import com.example.votingsystem.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,8 @@ public class VoteDAO {
 
     private final JpaRestaurantRepo restaurantRepo;
 
+    private final JpaRestaurantRepoPageable restaurantRepoPageable;
+
     private final JpaUserRepo userRepo;
 
     private final JpaMenuRepo menuRepo;
@@ -27,9 +31,10 @@ public class VoteDAO {
     private final JpaVoteRepo voteRepo;
 
     @Autowired
-    public VoteDAO(JpaDishRepo dishRepo, JpaRestaurantRepo restaurantRepo, JpaUserRepo userRepo, JpaMenuRepo menuRepo, JpaVoteRepo voteRepo) {
+    public VoteDAO(JpaDishRepo dishRepo, JpaRestaurantRepo restaurantRepo, JpaRestaurantRepoPageable restaurantRepoPageable, JpaUserRepo userRepo, JpaMenuRepo menuRepo, JpaVoteRepo voteRepo) {
         this.dishRepo = dishRepo;
         this.restaurantRepo = restaurantRepo;
+        this.restaurantRepoPageable = restaurantRepoPageable;
         this.userRepo = userRepo;
         this.menuRepo = menuRepo;
         this.voteRepo = voteRepo;
@@ -38,6 +43,14 @@ public class VoteDAO {
     public List<Dish> getAllDishes(){return dishRepo.findAll();}
 
     public List<Restaurant> getAllRestaurants(){return restaurantRepo.findAll();}
+
+    public Page<Restaurant> getAllRestaurantsPageable(RestaurantPage restaurantPage){
+        Sort sort = Sort.by(restaurantPage.getSortDirection(), restaurantPage.getSortBy());
+        Pageable pageable = PageRequest.of( restaurantPage.getPageNumber(),
+                                            restaurantPage.getPageSize(),
+                                            sort);
+        return restaurantRepoPageable.findAll(pageable);
+    }
 
     public List<User> getAllUsers() {
         return userRepo.findAll();

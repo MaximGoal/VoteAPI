@@ -1,5 +1,6 @@
 package com.example.votingsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +24,7 @@ public class Dish extends BaseEntity {
         this.price = price;
     }
 
-    //    @JsonBackReference
+    @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "dishes")
     private Set<Menu> menus = new HashSet<>();
 

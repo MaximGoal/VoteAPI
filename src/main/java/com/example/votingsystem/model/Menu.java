@@ -1,5 +1,6 @@
 package com.example.votingsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,18 +23,19 @@ import java.util.Set;
 @Setter
 public class Menu extends BaseEntity {
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Restaurant restaurant;
 
     @DateTimeFormat
     private LocalDate date;
 
-//    @JsonManagedReference
-//    @Transient
+    //    @Transient
+    @JsonManagedReference
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable( name = "menus_dishes",
-                joinColumns = @JoinColumn(name = "menu_id", referencedColumnName = "id"),
-                inverseJoinColumns = {@JoinColumn(name = "dish_id", referencedColumnName = "id")})
+            joinColumns = @JoinColumn(name = "menu_id", referencedColumnName = "id"),
+            inverseJoinColumns = {@JoinColumn(name = "dish_id", referencedColumnName = "id")})
     private Set<Dish> dishes = new HashSet<>();
 
 //    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

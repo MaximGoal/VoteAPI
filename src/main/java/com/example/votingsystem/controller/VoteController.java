@@ -1,10 +1,15 @@
 package com.example.votingsystem.controller;
 
+import com.example.votingsystem.exception.VoteException;
 import com.example.votingsystem.model.Menu;
 import com.example.votingsystem.model.Restaurant;
+import com.example.votingsystem.model.RestaurantPage;
 import com.example.votingsystem.model.Vote;
 import com.example.votingsystem.service.VoteApiService;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,9 +37,9 @@ public class VoteController {
                            Model model) {
         LocalDate date = LocalDate.now();
         List<Restaurant> restaurantList = voteApiService.getRestaurants();
+
         Map<Restaurant, Menu> map = new HashMap<>();
-        for (int i = 0; i < restaurantList.size(); i++) {
-            Restaurant restaurant = restaurantList.get(i);
+        for (Restaurant restaurant : restaurantList) {
             Menu menuByDateAndRestaurant = voteApiService.getMenuByDateAndRestaurant(date, restaurant);
             map.put(restaurant, menuByDateAndRestaurant);
         }
@@ -46,7 +51,6 @@ public class VoteController {
         return "menuList";
     }
 
-
     @GetMapping("/users")
     public ModelAndView users() {
         ModelAndView modelAndView = new ModelAndView("users.html");
@@ -57,10 +61,15 @@ public class VoteController {
 
     @GetMapping("/vote/{menuId}")
     public String vote(@PathVariable("menuId") Integer menuId,
-                       @RequestParam("userId") Integer userId) {
-        voteApiService.vote(userId, menuId);
-
-        return "redirect:/" + userId;
+                       @RequestParam("userId") Integer userId,
+                       Model model) {
+        try {
+            voteApiService.vote(userId, menuId);
+            model.addAttribute("userId", userId);
+            return "redirect:/" + userId;
+        } catch (Exception e) {
+            throw new VoteException("Error in user:" + userId + " voting.", userId);
+        }
     }
 
     @GetMapping("/unvote/{menuId}")
