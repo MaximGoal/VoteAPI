@@ -15,7 +15,6 @@ public class ThymeLeafConfig {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
         templateResolver.setCacheable(false);
         templateResolver.setPrefix("classpath:/templates/");
-//        templateResolver.setPrefix("classpath:../webapp/WEB-INF/jsp/");
         templateResolver.setSuffix(".html");
         return templateResolver;
     }

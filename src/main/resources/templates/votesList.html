@@ -13,9 +13,9 @@
   <header>
     <nav class="navbar">
       <div>
-        <a href="http://localhost:8080" class="navbar-brand" style="margin-left: 250px">
+        <a th:href="@{/{userId}(userId=${userId})}" class="navbar-brand" style="margin-left: 250px">
           <span class="badge badge-warning">Vote Api</span></a>
-        <a href="http://localhost:8080/allVotes" class="navbar-brand">
+        <a th:href="@{/{userId}/allVotes(userId=${userId})}" class="navbar-brand">
           <span class="badge badge-success">Refresh</span></a>
       </div>
     </nav>

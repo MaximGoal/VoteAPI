@@ -30,7 +30,9 @@ public class Menu extends BaseEntity {
     @DateTimeFormat
     private LocalDate date;
 
-    //    @Transient
+    @Transient
+    private Double totalPrice;
+
     @JsonManagedReference
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable( name = "menus_dishes",
@@ -59,6 +61,11 @@ public class Menu extends BaseEntity {
 
     public Double menuPrice() {
         return dishes.stream().map(Dish::getPrice).reduce(0.0, Double::sum);
+    }
+
+    public Double getTotalPrice() {
+        totalPrice = menuPrice();
+        return totalPrice;
     }
 
     public Set<Dish> getDishes() {

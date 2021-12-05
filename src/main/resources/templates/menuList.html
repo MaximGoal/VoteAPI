@@ -6,31 +6,98 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
           crossorigin="anonymous">
-<!--    <link rel="stylesheet" th:href="@{../static/style.css}">-->
+    <link rel="shortcut icon" href="#" />
+<!--    <link rel="stylesheet" type="text/css" th:href="@{../static/style.css}">-->
+<!--    <script type="text/javascript" src="../static/scripts.js"></script>-->
+    <script>
+        let userId = document.getElementById("userId");
+        let pageNumber = document.getElementById("pageNumber");
+        let pageSize = document.getElementById("pageSize");
+        let sortBy = document.getElementById("sortBy");
+
+        function onSelectScript() {
+
+            let root = "/" + userId;
+            let suffix = "?";
+            suffix += "pageNumber=" + (+pageNumber - 1);
+            suffix += "&pageSize=" + +pageSize;
+            suffix += "&sortBy=" + sortBy;
+
+            let httpRequest = new XMLHttpRequest();
+            httpRequest.open("GET", root + suffix);
+            httpRequest.send(null);
+
+            httpRequest.onreadystatechange = (e) => {
+                console.log(httpRequest.responseText)
+            }
+
+            return httpRequest;
+        }
+
+        function selectPageSize(selector) {
+            document.getElementById('pageSize').nodeValue = selector.options[selector.selectedIndex].value;
+            window.location.href = '/'  + document.getElementById('userId').getAttribute('value')
+                                    + '?pageSize=' + document.getElementById('pageSize').nodeValue
+                                    + '&pageNumber=' + document.getElementById('pageNumber').getAttribute('value')
+                                    + '&sortBy=' + document.getElementById('sortBy').getAttribute('value')
+        }
+    </script>
 </head>
+
 <body>
     <div>
         <header>
             <nav class="navbar">
                 <div>
-                    <a href="http://localhost:8080" class="navbar-brand" style="margin-left: 250px">
-                        <span class="badge badge-warning">Vote Api</span></a>
-                    <a href="http://localhost:8080/allVotes" class="navbar-brand">
-                        <span class="badge badge-warning">Votes list</span></a>
+                    <a th:href="@{/{userId}(userId=${userId})}" class="navbar-brand" style="margin-left: 250px">
+                        <span class="badge badge-dark">Vote Api</span></a>
+                    <a th:href="@{/{userId}/allVotes(userId=${userId})}" class="navbar-brand">
+                        <span class="badge badge-success">Votes list</span></a>
                 </div>
             </nav>
         </header>
     </div>
 
+
     <div class="container">
         <div class="alert alert-dark" role="alert" style="height: 70px">
             <h2 class="text-center">
                 <em>Menu List of <span th:text="${user.getName()}"></span></em>
+                <div id="userId" th:value="${user.getId()}" data-th-value="${user.getId()}" type="hidden"></div>
             </h2>
         </div>
         <div class="alert alert-warning" role="alert" style="height: 50px">
             <p>At date : <span class="badge badge-info"  th:text="${date}"></span></p>
         </div>
+
+        <label style="float: left ; margin-right: 10px" for="sortBy">Order by: </label>
+        <select id="sortBy" name="sortBy" th:object="${restaurantPage}" th:field="*{sortBy}" th:value="${restaurantPage.sortBy}"
+                style="float: left ; margin-left: 5px"
+                class="form-control-sm"
+                onchange="(window.location.href = '/'  + document.getElementById('userId').getAttribute('value')
+                                    + '?pageSize=' + document.getElementById('pageSize').getAttribute('value')
+                                    + '&pageNumber=1'
+                                    + '&sortBy=' + this.options[this.selectedIndex].value)">
+            <option th:value="id" th:selected="${restaurantPage.sortBy=='id'}">Id</option>
+            <option th:value="name" th:text="Name" th:selected="${restaurantPage.sortBy=='name'}">Name</option>
+            <option th:value="totalPrice" th:text="TotalPrice" th:selected="${restaurantPage.sortBy=='totalPrice'}">Total Price</option>
+        </select>
+
+        <select id="pageSize" name="pageSize" th:object="${restaurantPage}" th:field="*{pageSize}" th:value="${restaurantPage.pageSize}"
+                style="float: right ; margin-left: 5px"
+                class="form-control-sm"
+                onchange="(window.location.href = '/'  + document.getElementById('userId').getAttribute('value')
+                                    + '?pageSize=' + this.options[this.selectedIndex].value
+                                    + '&pageNumber=1'
+                                    + '&sortBy=' + document.getElementById('sortBy').getAttribute('value'))">
+            <option th:value="1" th:text="1" th:selected="${restaurantPage.pageSize==1}">1</option>
+            <option th:value="3" th:text="3" th:selected="${restaurantPage.pageSize==3}">3</option>
+            <option th:value="5" th:text="5" th:selected="${restaurantPage.pageSize==5}">5</option>
+            <option th:value="10" th:text="10" th:selected="${restaurantPage.pageSize==10}">10</option>
+            <option th:value="20" th:text="20" th:selected="${restaurantPage.pageSize==20}">20</option>
+        </select>
+        <label style="float: right; margin-right: 10px" for="pageSize">Restaurants in a page: </label>
+        <br>
 
         <table border="1" class="table table-striped table-responsive-md">
             <thead class="thead-dark">
@@ -41,8 +108,54 @@
             </tr>
             </thead>
 
+<!--            Pagination menu-->
+            <div th:if="${page.totalPages > 1}">
+                </br>
+                <div class="pagination" id="pageNumber" th:value="${page.number}+1">
+                    <span>Pages &nbsp;</span>
+                    <a th:each="pageNumber : ${pageNumbers}"
+                       th:href="@{/{userId}(userId=${userId}, pageSize=${page.getSize()}, pageNumber=${pageNumber}, sortBy=${sortBy})}"
+                       th:text="${pageNumber}"
+                       th:class="${pageNumber==page.number+1} ? active"
+                       th:style="${pageNumber==page.number+1 ? 'padding: 5px; color: darkred' : 'padding: 5px; color: blue'}">
+                    </a>
+                </div>
+            </div>
+<!--            End of Pagination menu-->
+
             <tbody>
-            <tr th:each="restaurant: ${restaurants}">
+<!--            Clear code without pagination-->
+<!--            <tr th:each="restaurant: ${restaurants}">-->
+<!--                <td th:text="${restaurant.name}"></td>-->
+<!--                <td>-->
+<!--                    <div th:each="dish: ${restaurantMenuMap.get(restaurant).getDishes()}">-->
+<!--                        <span th:text="${dish.name}"></span>-->
+<!--                        - price <span th:text="${dish.price}"></span>$-->
+<!--                    </div>-->
+<!--                    <div>-->
+<!--                        <strong> Total price :-->
+<!--                          <span th:text="${restaurantMenuMap.get(restaurant).menuPrice()}"></span>$-->
+<!--                        </strong>-->
+<!--                    </div>-->
+<!--                </td>-->
+<!--                <td><a th:href="@{/vote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id})}">-->
+<!--                        <button class="btn btn-outline-success" type="button"-->
+<!--                                data-container="body" data-toggle="popover" data-placement="bottom" title="Vote" data-content="You're voted">-->
+<!--                            Vote-->
+<!--                        </button>-->
+<!--                    </a>-->
+<!--                    <a th:href="@{/unvote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id}, date=${date})}">-->
+<!--                        <button class="btn btn-outline-danger"-->
+<!--                                data-toggle="popover" title="Unvote" data-content="You're unvoted">-->
+<!--                            Unvote-->
+<!--                        </button>-->
+<!--                    </a>-->
+<!--                </td>-->
+<!--            </tr>-->
+<!--            End Clear code without pagination-->
+
+<!--            with pagination-->
+            <tr th:each="restaurant, status: ${page}">
                 <td th:text="${restaurant.name}"></td>
                 <td>
                     <div th:each="dish: ${restaurantMenuMap.get(restaurant).getDishes()}">
@@ -51,16 +164,16 @@
                     </div>
                     <div>
                         <strong> Total price :
-                          <span th:text="${restaurantMenuMap.get(restaurant).menuPrice()}"></span>$
+                            <span th:text="${restaurantMenuMap.get(restaurant).getTotalPrice()}"></span>$
                         </strong>
                     </div>
                 </td>
                 <td><a th:href="@{/vote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id})}">
-                        <button class="btn btn-outline-success" type="button"
-                                data-container="body" data-toggle="popover" data-placement="bottom" title="Vote" data-content="You're voted">
-                            Vote
-                        </button>
-                    </a>
+                    <button class="btn btn-outline-success" type="button"
+                            data-container="body" data-toggle="popover" data-placement="bottom" title="Vote" data-content="You're voted">
+                        Vote
+                    </button>
+                </a>
                     <a th:href="@{/unvote/{menuId}(menuId=${restaurantMenuMap.get(restaurant).id}, userId=${user.id}, date=${date})}">
                         <button class="btn btn-outline-danger"
                                 data-toggle="popover" title="Unvote" data-content="You're unvoted">
@@ -69,6 +182,10 @@
                     </a>
                 </td>
             </tr>
+
+
+<!--            end pagination-->
+
             </tbody>
         </table>
     </div>

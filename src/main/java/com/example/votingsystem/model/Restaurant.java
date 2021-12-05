@@ -17,7 +17,7 @@ import java.util.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Restaurant extends BaseEntity {
+public class Restaurant extends BaseEntity implements Comparable {
 
     public Restaurant(Integer id, String name) {
         super(id, name);
@@ -32,7 +32,13 @@ public class Restaurant extends BaseEntity {
         return menus;
     }
 
+    public String getName(){return name;}
 
+    @Override
+    public int compareTo(Object o) {
+            Restaurant other = (Restaurant) o;
+            return Integer.compare(this.id, other.id);
+    }
 
     @Override
     public boolean equals(Object o) {

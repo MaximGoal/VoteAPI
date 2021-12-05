@@ -4,8 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 public class RestaurantPage {
-    private int pageNumber = 0;
-    private int pageSize = 5;
+    private int pageNumber = 1;
+    private int pageSize = 3;
     private Sort.Direction sortDirection = Sort.Direction.ASC;
     private String sortBy = "id";
 

@@ -21,10 +21,10 @@ INSERT INTO user_roles VALUES
                          (100003, 'USER');
 
 INSERT INTO restaurants VALUES
-                         (100010, 'Restaurant #1'),
-                         (100011, 'Restaurant #2'),
-                         (100012, 'Restaurant #3'),
-                         (100013, 'Restaurant #4');
+                         (100010, 'Restaurant #First'),
+                         (100011, 'Restaurant #Second'),
+                         (100012, 'Restaurant #Third'),
+                         (100013, 'Restaurant #Fourth');
 
 INSERT INTO menus VALUES
                          (100020, 'Breakfast #1', 100010, now()::timestamp(0)),
