@@ -6,7 +6,6 @@ import com.example.votingsystem.model.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +49,7 @@ public class VoteApiService {
         return voteDAO.getMenuByDateAndRestaurant(date, restaurant);
     }
 
-    // Exception handling doesn't work. Fix it!
+    // TODO: Exception handling doesn't work. Fix it.
     @Transactional
     public boolean vote (Integer userId, Integer menuId) {
             Vote vote = getVoteByUserIdAndMenuId(userId, menuId);
